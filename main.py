@@ -18,7 +18,7 @@ import pytz
 # 精确等待到下一个北京时间 06:30
 tz = pytz.timezone('Asia/Shanghai')
 now = datetime.datetime.now(tz)
-target = now.replace(hour=6, minute=30, second=0, microsecond=0)
+target = now.replace(hour=17, minute=18, second=0, microsecond=0)
 if now >= target:
     target += datetime.timedelta(days=1)
 wait_seconds = (target - now).total_seconds()
