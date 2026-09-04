@@ -13,15 +13,17 @@ import re
 import os
 import datetime
 import time
+import pytz
 
-# 精确等待到下一个 06:30
-now = datetime.datetime.now()
+# 精确等待到下一个北京时间 06:30
+tz = pytz.timezone('Asia/Shanghai')
+now = datetime.datetime.now(tz)
 target = now.replace(hour=6, minute=30, second=0, microsecond=0)
 if now >= target:
     target += datetime.timedelta(days=1)
 wait_seconds = (target - now).total_seconds()
 if wait_seconds > 0:
-    print(f'等待 {wait_seconds:.1f} 秒，直到 06:30:00')
+    print(f'等待 {wait_seconds:.1f} 秒，直到北京时间 06:30:00')
     time.sleep(wait_seconds)
 
 # github的云函数env定义的值是字符串，所以对于字典或者列表先要将其还原成原来的格式,当某一项留空时，传递的值为空字符串
