@@ -3,7 +3,7 @@
 - 图书馆自助预约程序：[MIKUCHINCHAN/Library-Actions](https://github.com/MIKUCHINCHAN/Library-Actions) 的 Github Action 版
 
 
-- 该脚本适合于**西安建筑科技大学(XAUAT)**、**中南大学(CSU)等**，除西建外的其余高校可将脚本中域名改为自己学校进行使用。
+
 - 利用 Github Action 的 [Secrets](https://docs.github.com/cn/actions/reference/encrypted-Secrets) 加密储存所有配置信息，任何人都无法从项目仓库中直接读取这些敏感信息。
 - 支持的通知方式：**Bark**、**钉钉机器人**；暂不支持的通知方式：Serverchan-Turbo、pushplus、喵推送、QQ机器人（go-cqhttp）
 
