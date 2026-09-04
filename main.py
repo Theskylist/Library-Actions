@@ -202,8 +202,8 @@ def login_in_1(USERNAME=USERNAME,PASSWORD=PASSWORD):
     多用来登录获取cookie，当登录失败时会调用钉钉进行通知
     """
     print("■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■")
-    res = post(url="http://rg.lib.xauat.edu.cn/api.php/login",
-                   headers={"Referer": "http://www.skalibrary.com/",
+    res = post(url="https://service.sust.edu.cn/v2/reserve/reserveDetail?id=4",
+                   headers={"Referer": "http://https://service.sust.edu.cn/v2/site/index/",
                             "User-agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_1 like Mac OS X) AppleWebKit/603.1.30 (KHTML, like Gecko) Version/10.0 Mobile/14E304 Safari/602.1 Edg/99.0.4844.74"},
                    data={"username": USERNAME, "password": PASSWORD, "from": "mobile"})
     if json.loads(res.content)['status']:
@@ -228,8 +228,8 @@ def login_in_2(USERNAME=USERNAME,PASSWORD=PASSWORD):
     多用来检查账号的密码的可用性，0-不可用，1-可用，
     """
     print("■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■")
-    res = post(url="http://rg.lib.xauat.edu.cn/api.php/login",
-                   headers={"Referer": "http://www.skalibrary.com/",
+    res = post(url="https://service.sust.edu.cn/v2/reserve/reserveDetail?id=4",
+                   headers={"Referer": "https://service.sust.edu.cn/v2/site/index/",
                             "User-agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_1 like Mac OS X) AppleWebKit/603.1.30 (KHTML, like Gecko) Version/10.0 Mobile/14E304 Safari/602.1 Edg/99.0.4844.74"},
                    data={"username": USERNAME, "password": PASSWORD, "from": "mobile"})
     if json.loads(res.content)['status']:
@@ -315,8 +315,8 @@ def url_info():
     print("■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■")
     for area_id in AREA_ID:
         res = get(
-            url=f"http://rg.lib.xauat.edu.cn/api.php/space_time_buckets?area={area_id}&day={datetime.date.today()}",
-            headers={"Referer": "http://www.skalibrary.com/"})
+            url=f"https://service.sust.edu.cn/api.php/space_time_buckets?area={area_id}&day={datetime.date.today()}",
+            headers={"Referer": "https://service.sust.edu.cn/v2/site/index"})
         if json.loads(res.content)['status']:
             #  spaceId代表这一房间的id，永远不变，SEGMENT=id=bookTimeId，每个房间每天都不一样，含房间和时间信息
             spaceId = json.loads(res.content)['data']['list'][0]['spaceId']
@@ -324,8 +324,7 @@ def url_info():
             endTime = json.loads(res.content)['data']['list'][0]['endTime']
             day = json.loads(res.content)['data']['list'][0]['day']
             startTime = json.loads(res.content)['data']['list'][0]['startTime']
-            seat_info_url=f"http://rg.lib.xauat.edu.cn/api.php/spaces_old?area={area_id}&day={day}&endTime={endTime}&segment={id}&startTime={startTime}"
-            SEGMENT.append(id)
+            seat_info_url=f"https://service.sust.edu.cn/api.php/spaces_old?area={area_id}&day={day}&endTime={endTime}&segment={id}&startTime={startTime}"
             SEAT_INFO_URL.append(seat_info_url)
             print("■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■")
         else:
@@ -425,8 +424,8 @@ def reserve(USERNAME=USERNAME):
 
         # 预约,需要cookie
         res = post(
-            url=f"http://rg.lib.xauat.edu.cn/api.php/spaces/{SEAT[0]}/book",
-            headers={"Referer": "http://www.skalibrary.com/",
+            url=f"https://service.sust.edu.cn/api.php/spaces/{SEAT[0]}/book",
+            headers={"Referer": "https://service.sust.edu.cn/v2/site/index/",
                      "User-agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_1 like Mac OS X) AppleWebKit/603.1.30 (KHTML, like Gecko) Version/10.0 Mobile/14E304 Safari/602.1 Edg/99.0.4844.74"},
             data = {"access_token": req.cookies.get("access_token"), "userid": USERNAME, "type": 1,"id": SEAT[0],"segment": SEAT[3]})
         if json.loads(res.content)['status']:
