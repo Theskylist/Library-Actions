@@ -88,6 +88,117 @@ for i in range(1,11):
         OTHERS_ACCOUNT[dynamic_variable[f'OTHERS_ACCOUNT_USERNAME_{i}']]=dynamic_variable[f'OTHERS_ACCOUNT_PASSWORD_{i}']
 
 
+
+# ===== [新增] 全局验证码求解器 =====
+CAPTCHA_SOLVER = TextClickCaptchaSolver()
+
+# ===== [新增] 验证码识别函数 =====
+def solve_captcha_from_base64(img_base64: str, word_list: list) -> list:
+    """
+    识别文字顺序点击验证码。
+    :param img_base64: 验证码图片的 base64 字符串
+    :param word_list: 目标文字列表，如 ['甲', '乙']
+    :return: 点击坐标列表 [(x1,y1), (x2,y2), ...] 或空列表
+    """
+    try:
+        points = CAPTCHA_SOLVER.solve_image(img_base64, word_list)
+        if points:
+            print(f'■■■验证码识别成功 目标={word_list} 坐标={points}')
+            return points
+        else:
+            print(f'■■■验证码识别失败 目标={word_list}')
+            return []
+    except Exception as e:
+        print(f'■■■验证码识别异常: {e}')
+        return []
+
+
+def solve_captcha_from_session(session, captcha_url: str, prompt_text: str = "") -> list:
+    """
+    从 session 获取验证码图片，识别后返回点击坐标。
+    适用场景：登录/预约时后台返回验证码图片 base64。
+    """
+    for attempt in range(30):
+        try:
+            resp = session.post(captcha_url, timeout=10)
+            data = resp.json()
+
+            # 提取验证码图片 base64 和目标字列表
+            # 实际字段名需要抓包确认，这里列出常见的几种
+            img_b64 = (
+                data.get("originalImageBase64")
+                or data.get("imageBase64")
+                or data.get("data", {}).get("image")
+            )
+            word_list = (
+                data.get("wordList")
+                or data.get("words")
+                or data.get("data", {}).get("texts")
+            )
+            captcha_id = (
+                data.get("captchaId")
+                or data.get("token")
+                or data.get("data", {}).get("captchaId")
+            )
+
+            if not img_b64 or not word_list:
+                print(f'[第{attempt+1}/30次] 验证码接口返回数据异常')
+                time.sleep(1)
+                continue
+
+            print(f'[第{attempt+1}/30次] 验证码识别目标: {word_list}')
+            points = solve_captcha_from_base64(img_b64, word_list)
+
+            if points and len(points) == len(word_list):
+                return points  # 成功
+
+            # 识别结果不完整，刷新重试
+            print(f'[第{attempt+1}/30次] 识别坐标不完整，刷新重试')
+            time.sleep(1)
+
+        except Exception as e:
+            print(f'[第{attempt+1}/30次] 请求验证码异常: {e}')
+            time.sleep(1)
+
+    print('■■■验证码识别超过最大重试次数')
+    return []
+
+
+def login_with_captcha(session, username, password, captcha_url, verify_url) -> bool:
+    """
+    带验证码的登录函数。
+    适用于 rg.lib.xauat.edu.cn 原生登录（需验证码时）。
+    """
+    # 1. 先尝试直接登录
+    login_data = {"username": username, "password": password, "from": "mobile"}
+    resp = session.post("https://service.sust.edu.cn/v2/reserve/reserveDetail?id=4",
+                         headers={"Referer": "https://service.sust.edu.cn/v2/site/index/",
+                                  "User-agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_1 like Mac OS X) AppleWebKit/603.1.30"},
+                         data=login_data)
+    result = resp.json()
+    if result.get('status'):
+        print(f"■■■普通登录成功，无需验证码")
+        return True
+
+    # 2. 如果需要验证码，识别并提交
+    print('■■■检测到需要验证码，启动自动识别...')
+    points = solve_captcha_from_session(session, captcha_url)
+    if not points:
+        return False
+
+    # 3. 提交验证结果（格式需根据抓包调整）
+    verify_data = {
+        "captchaId": "",  # 从之前的请求中获取
+        "points": json.dumps([{"x": x, "y": y} for x, y in points]),
+        "username": username,
+        "password": password,
+    }
+    resp = session.post(verify_url, data=verify_data)
+    print(f"■■■验证码提交结果: {resp.text}")
+    return resp.status_code == 200
+
+
+
 def get_inform_way():
     """
     同时考虑到本地和github云端执行，先判断变量是否存在-对于本地是不存在的、云端是存在的但为None，再判断是否是None
