@@ -1,3 +1,7 @@
 requests==2.26.0
 urllib3==1.26.7
 pytz==2021.3
+# 原有依赖保持不变，追加以下内容：
+ddddocr>=1.4
+Pillow>=9.0
+playwright
