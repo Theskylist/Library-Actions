@@ -869,7 +869,14 @@ if __name__ == '__main__':
     INFORMED_WAY=get_inform_way()
 
     req = requests.session()
+# ===== [修改] 先尝试普通登录，失败则尝试带验证码的登录 =====
     if not login_in_1(USERNAME, PASSWORD):
+    print('■■■普通登录失败，尝试带验证码的登录...')
+    # 这里的验证码接口地址需要你抓包确认
+    captcha_get_url = "http://rg.lib.xauat.edu.cn/api.php/check"
+    captcha_verify_url = "http://rg.lib.xauat.edu.cn/api.php/login"
+    if not login_with_captcha(req, USERNAME, PASSWORD, captcha_get_url, captcha_verify_url):
+        print('■■■带验证码的登录也失败，终止')
         quit()
 
     while not RESERVED_SEAT:
