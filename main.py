@@ -1041,6 +1041,23 @@ if __name__ == '__main__':
 
 
 
+# ===== [新增] 本地运行测试入口 =====
+if __name__ == '__main__' and os.environ.get("TEST_CAPTCHA"):
+    # 单独测试验证码识别
+    import sys
+    if len(sys.argv) > 2:
+        img_file = sys.argv[1]
+        words = sys.argv[2].split(",")
+        import base64
+        with open(img_file, "rb") as f:
+            b64 = base64.b64encode(f.read()).decode()
+        pts = solve_captcha_from_base64(b64, words)
+        print(f"验证码识别结果: {pts}")
+    else:
+        print("用法: TEST_CAPTCHA=1 python main.py <图片文件> <目标字,用逗号分隔>")
+        print("示例: TEST_CAPTCHA=1 python main.py captcha.png 甲,乙")
+
+
 
 
 # PC端抓包：访问不同链接时，cookie内容不完全相同
