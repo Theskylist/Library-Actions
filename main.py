@@ -15,6 +15,17 @@ import datetime
 import time
 import pytz
 
+
+
+# ===== [新增] 验证码识别 + 本地 dotenv 支持 =====
+from captcha_solver import TextClickCaptchaSolver, extract_words_from_prompt
+try:
+    from dotenv import load_dotenv
+except ImportError:
+    load_dotenv = None
+
+
+
 # 精确等待到下一个北京时间 06:30
 tz = pytz.timezone('Asia/Shanghai')
 now = datetime.datetime.now(tz)
