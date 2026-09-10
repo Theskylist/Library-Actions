@@ -52,6 +52,31 @@ SELECT_WAY=eval(os.environ["SELECT_WAY"]) if os.environ["SELECT_WAY"] else ''  #
               # 2 优先级在于座位号,一级优先的是某几个房间的某些位置，二级优先为某几个房间的另外某些位置……(具体见readme.md)
 
 
+
+# ===== [新增] 支持本地运行：如果环境变量不存在，从 .env 文件读取 =====
+if load_dotenv:
+    load_dotenv()
+
+# 如果上述环境变量都是空的（本地运行没有设置），尝试回退从 .env 读取默认值
+if not USERNAME and os.path.exists('.env'):
+    load_dotenv()
+    # 重新读取一次
+    USERNAME = eval(os.environ.get("USERNAME", "[]"))
+    PASSWORD = os.environ.get("PASSWORD", "")
+    AREA_ID = eval(os.environ.get("AREA_ID", "[10, 8]"))
+    BANNED_SEAT = eval(os.environ.get("BANNED_SEAT", "{}"))
+    OK_SEAT = eval(os.environ.get("OK_SEAT", "{}"))
+    DD_BOT_ACCESS_TOKEN = os.environ.get("DD_BOT_ACCESS_TOKEN", "")
+    DD_BOT_SECRET = os.environ.get("DD_BOT_SECRET", "")
+    BARK_TOKEN = os.environ.get("BARK_TOKEN", "")
+    ALWAYS_SPARE_AREA = eval(os.environ.get("ALWAYS_SPARE_AREA", "''"))
+    SELECT_WAY = eval(os.environ.get("SELECT_WAY", "''"))
+    for i in range(1, 11):
+        exec(f'OTHERS_ACCOUNT_USERNAME_{i} = eval(os.environ.get("OTHERS_ACCOUNT_USERNAME_{i}", "''"))')
+        exec(f'OTHERS_ACCOUNT_PASSWORD_{i} = os.environ.get("OTHERS_ACCOUNT_PASSWORD_{i}", "")')
+
+
+
 # 救场用户的账号密码，当OTHERS_ACCOUNT={}即不启用救援模式,用于解决由于意外不能在30min内完成签到的情况，账号越靠前越快用到，且对于账号可用性无需保证都能用，会每次检查账号密码是否正确;如果能收集到很多账号这里可添加无数个
 # 创建动态变量
 OTHERS_ACCOUNT = {}
