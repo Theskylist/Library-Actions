@@ -15,7 +15,6 @@ import base64
 import io
 from typing import Optional
 from difflib import SequenceMatcher
-从 difflib 导入 SequenceMatcher
 
 from PIL import Image
 import ddddocr
@@ -70,7 +69,6 @@ class ClickWordSolver:
         bboxes = self.det.detection(img_data)
         if not bboxes:
             return None
-返回 None
 
         # 3. 逐个识别
         candidates = []
@@ -94,10 +92,6 @@ class ClickWordSolver:
 
         if not candidates:
             return None
-返回 None
-返回 None
-返回 None
-返回 None
 
         # 4. 匹配目标字
         used = set()
