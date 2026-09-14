@@ -871,7 +871,7 @@ if __name__ == '__main__':
     req = requests.session()
 # ===== [修改] 先尝试普通登录，失败则尝试带验证码的登录 =====
     if not login_in_1(USERNAME, PASSWORD):
-    print('■■■普通登录失败，尝试带验证码的登录...')
+        print('■■■普通登录失败，尝试带验证码的登录...')
     # 这里的验证码接口地址需要你抓包确认
     captcha_get_url = "http://rg.lib.xauat.edu.cn/api.php/check"
     captcha_verify_url = "http://rg.lib.xauat.edu.cn/api.php/login"
